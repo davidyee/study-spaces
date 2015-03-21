@@ -5,7 +5,7 @@ defined('ABSPATH') OR exit; // do not expose the plugin if the core isn't loaded
  * Plugin URI: http://www.isss.ca
  * Description: Plugin for displaying and searching various study locations on campus at the University of Alberta.
  * Author: David Yee
- * Version: 0.0.1
+ * Version: 0.0.2
  * Author URI: http://www.davidvyee.com
  * Text Domain: isss-study-spaces-textdomain
  */
@@ -72,6 +72,10 @@ class StudySpaces
         $plugin = isset($_REQUEST['plugin']) ? $_REQUEST['plugin'] : '';
         check_admin_referer("activate-plugin_{$plugin}");
 
+        // define post types for flushing
+        self::location_taxonomy();
+        self::study_type_taxonomy();
+        self::study_space_post_type();
         self::days_open_taxonomy();
 
         $days = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Holiday');
@@ -83,6 +87,11 @@ class StudySpaces
         self::add_study_spaces_role();
 
         self::file_replace();
+
+        // update permalink structure
+        // the below updates the permalink
+        // see http://codex.wordpress.org/Function_Reference/flush_rewrite_rules
+        flush_rewrite_rules(); // update permalink structure
 
         // uncomment the following line to see the function in action
         // exit( var_dump( $_GET ) );
@@ -190,7 +199,7 @@ class StudySpaces
     }
 
     // register the custom study space post type
-    public function study_space_post_type()
+    public static function study_space_post_type()
     {
         $labels = array(
             'name' => _x('Study Spaces', 'Post Type General Name', 'isss-study-spaces-textdomain'),
@@ -263,7 +272,7 @@ class StudySpaces
     } // private function add_cap
 
     // register the custom study type taxonomy
-    public function study_type_taxonomy()
+    public static function study_type_taxonomy()
     {
         $labels = array(
             'name' => _x('Study Types', 'Taxonomy General Name', 'isss-study-spaces-textdomain'),
@@ -301,7 +310,7 @@ class StudySpaces
     }
 
     // register the custom location taxonomy
-    public function location_taxonomy()
+    public static function location_taxonomy()
     {
         $labels = array(
             'name' => _x('Locations', 'Taxonomy General Name', 'isss-study-spaces-textdomain'),
